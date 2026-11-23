@@ -60,14 +60,14 @@ export class WorkspaceIntegrationService {
           if (memoryManager) {
             // Execute loadWorkspace tool to get comprehensive workspace data
             const result = await memoryManager.executeTool('loadWorkspace', {
-              id: resolvedWorkspaceId,
+              workspace: resolvedWorkspaceId,
               limit: 3 // Get recent sessions, states, and activity
             }) as LoadWorkspaceToolResult;
 
             if (result.success && result.data) {
               // Return the comprehensive workspace data from the tool
               return {
-                id: resolvedWorkspaceId,
+                workspace: resolvedWorkspaceId,
                 ...result.data,
                 // Keep the workspace context from the result
                 workspaceContext: result.workspaceContext

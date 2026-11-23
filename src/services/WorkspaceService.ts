@@ -680,6 +680,7 @@ export class WorkspaceService {
    * @returns Full workspace data or null if not found
    */
   async getWorkspaceByNameOrId(identifier: string): Promise<IndividualWorkspace | null> {
+    if (!identifier) return null;
     if (this.isSystemWorkspaceIdentifier(identifier)) {
       return this.getSystemWorkspace();
     }

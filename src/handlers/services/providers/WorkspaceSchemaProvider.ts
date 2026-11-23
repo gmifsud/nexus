@@ -246,11 +246,11 @@ export class WorkspaceSchemaProvider implements ISchemaProvider {
    * @param data Enhancement data
    */
   private enhanceLoadWorkspaceSchema(schema: EnhancedJSONSchema, data: WorkspaceEnhancementData): void {
-    if (!schema.properties || !schema.properties.id) {
+    if (!schema.properties || !schema.properties.workspace) {
       return; // Skip if 'id' parameter doesn't exist
     }
 
-    const idProp = schema.properties.id;
+    const idProp = schema.properties.workspace;
     // Add enum with available workspace IDs
     idProp.enum = data.workspaceIds;
 

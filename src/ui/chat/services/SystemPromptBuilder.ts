@@ -478,19 +478,19 @@ Start with the entrypoint and load deeper guide files selectively.
             const workspaceName = workspaceData.context?.name || workspaceRef.name;
             prompt += `<workspace name="${this.escapeXmlAttribute(workspaceName)}" id="${this.escapeXmlAttribute(workspaceRef.id)}">\n`;
 
-            prompt += this.escapeXmlContent(JSON.stringify(workspaceData, null, 2));
+            prompt += this.escapeXmlContent(this.serializeAndTruncate(workspaceData));
 
             prompt += `\n</workspace>\n\n`;
           } else {
             // Basic workspace object (fallback)
             prompt += `<workspace name="${this.escapeXmlAttribute(workspaceData.name || workspaceRef.name)}" id="${this.escapeXmlAttribute(workspaceRef.id)}">\n`;
 
-            prompt += this.escapeXmlContent(JSON.stringify({
-              name: workspaceData.name,
-              description: workspaceData.description,
-              rootFolder: workspaceData.rootFolder,
-              context: workspaceData.context
-            }, null, 2));
+            prompt += this.escapeXmlContent(this.serializeAndTruncate({
+                name: workspaceData.name,
+                description: workspaceData.description,
+                rootFolder: workspaceData.rootFolder,
+                context: workspaceData.context
+              }));
 
             prompt += `\n</workspace>\n\n`;
           }
@@ -521,6 +521,15 @@ Start with the entrypoint and load deeper guide files selectively.
    * When a workspace is selected in chat settings, include the full workspace data
    * (same rich context as the #workspace suggester)
    */
+  
+  private serializeAndTruncate(data: any, maxLength: number = 250000): string {
+    const json = JSON.stringify(data, null, 2);
+    if (json.length > maxLength) {
+      return json.substring(0, maxLength) + '\n... [TRUNCATED DUE TO SIZE LIMIT]';
+    }
+    return json;
+  }
+
   private buildSelectedWorkspaceSection(
     loadedWorkspaceData?: LoadedWorkspaceData | null,
     workspaceContext?: WorkspaceContext | null
@@ -534,7 +543,7 @@ Start with the entrypoint and load deeper guide files selectively.
 
       let prompt = `<selected_workspace name="${this.escapeXmlAttribute(workspaceName)}" id="${this.escapeXmlAttribute(workspaceId)}">\n`;
       prompt += 'This workspace is currently selected. Use it as the primary context.\n\n';
-      prompt += this.escapeXmlContent(JSON.stringify(loadedWorkspaceData, null, 2));
+      prompt += this.escapeXmlContent(this.serializeAndTruncate(loadedWorkspaceData, 500000));
       prompt += '\n</selected_workspace>';
 
       return prompt;
@@ -545,7 +554,7 @@ Start with the entrypoint and load deeper guide files selectively.
       return null;
     }
 
-    return `<selected_workspace>\n${this.escapeXmlContent(JSON.stringify(workspaceContext, null, 2))}\n</selected_workspace>`;
+    return `<selected_workspace>\n${this.escapeXmlContent(this.serializeAndTruncate(workspaceContext, 500000))}\n</selected_workspace>`;
   }
 
   /**

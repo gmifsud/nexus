@@ -118,16 +118,16 @@ export function formatWorkspaceDataForPrompt(
   }
 
   const { prettyPrint = true } = options;
-  return prettyPrint
+  const jsonStr = prettyPrint
     ? JSON.stringify(formatted, null, 2)
     : JSON.stringify(formatted);
+    
+  if (jsonStr.length > 500000) {
+    return jsonStr.substring(0, 500000) + '\n... [TRUNCATED DUE TO SIZE LIMIT]';
+  }
+  return jsonStr;
 }
 
-/**
- * Check if workspace data has any meaningful content
- * @param workspaceData Raw workspace data
- * @returns true if there's content worth including in a prompt
- */
 export function hasWorkspaceContent(workspaceData: WorkspaceDataLike | null | undefined): boolean {
   if (!workspaceData) return false;
 
